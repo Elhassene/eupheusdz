@@ -1,24 +1,28 @@
-import logo from './logo.svg';
 import './App.css';
-
+import {
+  HashRouter as Router,
+  Switch, Route
+} from "react-router-dom";
+import Home from './pages/Home';
+import Contact from './pages/Contact';
+import About from './pages/About';
+import Courses from './pages/Courses';
+import ScrollToTop from './common/ScrollToTop';
+import NavBar from './components/navBar/NavBar';
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+    <Router>
+    <ScrollToTop/>
+    <NavBar/>
+    <Switch>
+      <Route path="/" exact component={Home} />
+      <Route path="/courses" exact component={Courses} />
+      <Route path="/about" exact component={About} />
+      <Route path="/contact" exact component={Contact} />
+    </Switch>
+    </Router>
+    </>
   );
 }
 
