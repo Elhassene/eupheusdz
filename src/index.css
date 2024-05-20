@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.swiper-pagination-custom {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem; /* Adjust the margin as needed */
+}
+
+.swiper-pagination-bullet {
+  background-color: #000;
+  opacity: 0.5;
+}
+
+.swiper-pagination-bullet-active {
+  color: green;
+  opacity: 1;
+}

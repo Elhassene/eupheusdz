@@ -6,5 +6,15 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        '.text-gradient': {
+          background: 'linear-gradient(to right, #808000, #0000FF)',
+          '-webkit-background-clip': 'text',
+          '-webkit-text-fill-color': 'transparent',
+        },
+      })
+    },
+  ],
 }
