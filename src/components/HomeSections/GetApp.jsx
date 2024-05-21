@@ -13,9 +13,9 @@ const GetApp = () => {
             Get the App
           </button>
         </div>
-        <div className="mt-8 md:mt-0 md:w-1/2 flex justify-center space-x-4">
-          <img src={img2} alt="App screenshot 1" className="w-2/3 md:w-1/2 lg:w-1/3 ml-4" />
-          <img src={img1} alt="App screenshot 2" className="w-2/3 md:w-1/2 lg:w-1/3 " />
+        <div className="relative mt-8 md:mt-0 md:w-1/2 flex justify-center items-center">
+          <img src={img1} alt="App screenshot 1" className="absolute w-1/2 lg:w-1/3 mr-28 mt-24 md:mt-0" style={{ right: '-20px', top: '-120px' }} />
+          <img src={img2} alt="App screenshot 2" className="w-1/2 lg:w-1/3 mr-20 mt-20 md:mt-0" style={{ left: '-20px', zIndex: 10 }} />
         </div>
       </div>
     </div>

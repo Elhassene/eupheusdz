@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import logoimg from '../../images/logo.png';
 
 const NavBar = () => {
   const [show, setShow] = useState(false);
+  const location = useLocation();
 
   const handleShow = () => {
     setShow(!show);
+  };
+
+  const getLinkClassName = (path) => {
+    return location.pathname === path ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-700 hover:text-blue-500';
   };
 
   return (
@@ -34,10 +39,10 @@ const NavBar = () => {
             </svg>
           </div>
           <ul className="hidden md:flex space-x-4 font-bold">
-            <li className="text-gray-700 hover:text-blue-500 cursor-pointer"><Link to="/">Home</Link></li>
-            <li className="text-gray-700 hover:text-blue-500 cursor-pointer"><Link to="/courses">Courses</Link></li>
-            <li className="text-gray-700 hover:text-blue-500 cursor-pointer"><Link to="/about">About Us</Link></li>
-            <li className="text-gray-700 hover:text-blue-500 cursor-pointer"><Link to="/contact">Contact Us</Link></li>
+            <li className={`${getLinkClassName('/')} cursor-pointer`}><Link to="/">Home</Link></li>
+            <li className={`${getLinkClassName('/courses')} cursor-pointer`}><Link to="/courses">Courses</Link></li>
+            <li className={`${getLinkClassName('/about')} cursor-pointer`}><Link to="/about">About Us</Link></li>
+            <li className={`${getLinkClassName('/contact')} cursor-pointer`}><Link to="/contact">Contact Us</Link></li>
           </ul>
           <div className="px-4 py-2 bg-green-700 text-white border border-green-700 rounded hover:bg-white hover:text-green-700 cursor-pointer">Log in</div>
           <div className="px-4 py-2 text-green-700 border border-green-700 rounded hover:bg-green-700 hover:text-white cursor-pointer">Sign up</div>
@@ -67,10 +72,10 @@ const NavBar = () => {
             </svg>
           </div>
           <ul className="mt-4 space-y-2">
-            <li className="block text-gray-700 hover:text-blue-500 cursor-pointer">Home</li>
-            <li className="block text-gray-700 hover:text-blue-500 cursor-pointer">Courses</li>
-            <li className="block text-gray-700 hover:text-blue-500 cursor-pointer">About Us</li>
-            <li className="block text-gray-700 hover:text-blue-500 cursor-pointer">Contact</li>
+            <li className={`${getLinkClassName('/')} block cursor-pointer`}><Link to="/">Home</Link></li>
+            <li className={`${getLinkClassName('/courses')} block cursor-pointer`}><Link to="/courses">Courses</Link></li>
+            <li className={`${getLinkClassName('/about')} block cursor-pointer`}><Link to="/about">About Us</Link></li>
+            <li className={`${getLinkClassName('/contact')} block cursor-pointer`}><Link to="/contact">Contact Us</Link></li>
           </ul>
         </div>
       )}

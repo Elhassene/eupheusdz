@@ -2,7 +2,7 @@ import React from 'react';
 
 const News = () => {
   return (
-    <div className="relative p-8 md:p-16 mt-64 md:mt-0 z-0">
+    <div className="relative p-8 pb-20 md:pb-28 md:p-16 mt-64 md:mt-0 z-0">
       <div className="relative max-w-lg mx-auto bg-blue-800 p-6 rounded-lg shadow-lg z-10">
         <div className="absolute top-0 left-0 w-16 h-16 bg-green-500 transform -translate-x-1/2 -translate-y-1/2 rounded-full"></div>
         <div className="absolute bottom-0 right-0 w-16 h-16 bg-green-500 transform translate-x-1/2 translate-y-1/2 rounded-full"></div>
