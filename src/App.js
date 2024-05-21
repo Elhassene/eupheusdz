@@ -9,6 +9,7 @@ import About from './pages/About';
 import Courses from './pages/Courses';
 import ScrollToTop from './common/ScrollToTop';
 import NavBar from './components/navBar/NavBar';
+import Footer from './components/footer/Footer';
 function App() {
   return (
     <>
@@ -21,6 +22,7 @@ function App() {
       <Route path="/about" exact component={About} />
       <Route path="/contact" exact component={Contact} />
     </Switch>
+    <Footer/>
     </Router>
     </>
   );

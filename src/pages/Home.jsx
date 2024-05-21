@@ -6,6 +6,7 @@ import coursesCard from '../coursesCard';
 import News from '../components/newsletter/News';
 import GetApp from '../components/HomeSections/GetApp';
 
+
 const Home = () => {
   return (
     <>
