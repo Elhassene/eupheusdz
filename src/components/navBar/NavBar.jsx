@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import Login from '../../common/Login';
 import logoimg from '../../images/logo.png';
+import SignUp from '../../common/SignUp';
 
 const NavBar = () => {
   const [show, setShow] = useState(false);
@@ -44,8 +46,8 @@ const NavBar = () => {
             <li className={`${getLinkClassName('/about')} cursor-pointer`}><Link to="/about">About Us</Link></li>
             <li className={`${getLinkClassName('/contact')} cursor-pointer`}><Link to="/contact">Contact Us</Link></li>
           </ul>
-          <div className="px-4 py-2 bg-green-700 text-white border border-green-700 rounded hover:bg-white hover:text-green-700 cursor-pointer">Log in</div>
-          <div className="px-4 py-2 text-green-700 border border-green-700 rounded hover:bg-green-700 hover:text-white cursor-pointer">Sign up</div>
+          <Login/>
+          <SignUp/>
           <button className="md:hidden flex items-center text-gray-700" onClick={handleShow}>
             <svg className="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />

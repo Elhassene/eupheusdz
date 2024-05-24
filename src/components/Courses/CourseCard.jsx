@@ -1,17 +1,26 @@
 import React, { useState } from 'react';
-import { FaHeart, FaRegHeart, FaStar } from 'react-icons/fa';  
-  const CourseCard = ({ coursesCard }) => {
-    const [heartStates, setHeartStates] = useState(coursesCard.map(() => false));
-  
-    const handleHeart = (index) => {
-      const updatedHeartStates = [...heartStates];
-      updatedHeartStates[index] = !updatedHeartStates[index];
-      setHeartStates(updatedHeartStates);
-    };
-  
-    return (
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-8 mt-20'>
-        {coursesCard.map((val, index) => (
+import { FaHeart, FaRegHeart, FaStar } from 'react-icons/fa';
+
+const CourseCard = ({ coursesCard }) => {
+  const [heartStates, setHeartStates] = useState(coursesCard.map(() => false));
+  const [currentPage, setCurrentPage] = useState(1);
+  const cardsPerPage = 9;
+
+  const handleHeart = (index) => {
+    const updatedHeartStates = [...heartStates];
+    updatedHeartStates[index] = !updatedHeartStates[index];
+    setHeartStates(updatedHeartStates);
+  };
+
+  const totalPages = Math.ceil(coursesCard.length / cardsPerPage);
+  const startIndex = (currentPage - 1) * cardsPerPage;
+  const endIndex = startIndex + cardsPerPage;
+  const currentCards = coursesCard.slice(startIndex, endIndex);
+
+  return (
+    <div className='p-8 mt-20'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'>
+        {currentCards.map((val, index) => (
           <div key={val.id} className='bg-white rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:-translate-y-2'>
             <div className='bg-green-500 text-blue-800 text-center py-6 rounded-t-lg h-40'>
               <h3 className='text-2xl font-bold pt-8'>EUPHEUS</h3>
@@ -38,15 +47,26 @@ import { FaHeart, FaRegHeart, FaStar } from 'react-icons/fa';
               <button className='bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300'>See more</button>
               <p className='flex items-center'>
                 {val.likes} <span onClick={() => handleHeart(index)} className='ml-2 cursor-pointer'>
-                  {heartStates[index] ? <FaHeart className='text-red-500' /> : <FaRegHeart />}
+                  {heartStates[startIndex + index] ? <FaHeart className='text-red-500' /> : <FaRegHeart />}
                 </span>
               </p>
             </div>
           </div>
         ))}
       </div>
-    );
-  };
-  
-  export default CourseCard;
-  
+      <div className='flex justify-center mt-8'>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            key={i}
+            className={`mx-1 px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+            onClick={() => setCurrentPage(i + 1)}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default CourseCard;

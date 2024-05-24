@@ -116,6 +116,32 @@ const coursesCard = [
       likes: 27,
       stars: 5,
     },
+    {
+        id: 10,
+        title: "Economics BAC 2025",
+        description: "This course covers all bachelor economics before the final exam.",
+        type: "Face to Face",
+        location: "Boumerdes",
+        price: 5000,
+        status: "open",
+        student_max: 60,
+        student_current: 38,
+        likes: 2,
+        stars: 3,
+      },
+      {
+        id: 11,
+        title: "Economics BAC 2025",
+        description: "This course covers all bachelor economics before the final exam.",
+        type: "Face to Face",
+        location: "Boumerdes",
+        price: 5000,
+        status: "open",
+        student_max: 60,
+        student_current: 38,
+        likes: 7,
+        stars: 5,
+      },
   ];
   
   export default coursesCard;
