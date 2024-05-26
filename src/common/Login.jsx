@@ -1,7 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaUser, FaLock, FaEye, FaEyeSlash, FaTimes } from 'react-icons/fa';
+import axios from 'axios';
 
 const Login = () => {
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const fetchUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/user'
+
+    // useEffect(() => {
+    //     async function getCourses() {
+    //         try {
+    //             const response = await axios.get(fetchUrl, {
+    //                 headers:{
+    //                     "Authorization": "Bearer 5|hV58FT8svysopWxa3IVNqLTQ6ynFT6WryqdGl7yC49ddf1e5"
+    //                 }
+    //             });
+    //             console.log('Data:', response.data);
+    //             console.log(response.status)
+    //         } catch (error) {
+    //             if (error.response) {
+    //                 // Server responded with a status other than 200 range
+    //                 console.error('Response error:', error.response.status);
+    //                 console.error('Response data:', error.response.data);
+    //             } else if (error.request) {
+    //                 // Request was made but no response received
+    //                 console.error('Request error:', error.request);
+    //             } else {
+    //                 // Something else happened in setting up the request
+    //                 console.error('Error:', error.message);
+    //             }
+    //         }
+    //     }
+    //     getCourses();
+    // }, []);
     const [toggle, setToggle] = useState(false);
     const [hidden, setHidden] = useState(true);
     const [isChecked, setIsChecked] = useState(false);
@@ -44,6 +76,8 @@ const Login = () => {
                                     className="flex-1 outline-none"
                                     type="email"
                                     placeholder="Enter your email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     required
                                 />
                             </div>
@@ -56,6 +90,8 @@ const Login = () => {
                                     className="flex-1 outline-none"
                                     type={hidden ? 'password' : 'text'}
                                     placeholder="Enter your password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     required
                                 />
                                 <div onClick={handleHidden} className="cursor-pointer">
@@ -77,6 +113,7 @@ const Login = () => {
                         <button
                             className={`w-full bg-green-700 text-white py-2 rounded hover:bg-green-600 ${!isChecked && 'opacity-50 cursor-not-allowed'}`}
                             disabled={!isChecked}
+                        
                         >
                             Login
                         </button>
