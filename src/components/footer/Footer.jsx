@@ -1,8 +1,17 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { FaLinkedin, FaFacebook, FaInstagram } from 'react-icons/fa';
 import logo from '../../images/logo2.png';
 
 const Footer = () => {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+  const isSignupPage = location.pathname === '/signup';
+
+  if (isLoginPage || isSignupPage) {
+    return null;
+  }
+
   return (
     <footer className="bg-blue-800 text-white">
       <div className="container mx-auto py-10 flex flex-col md:flex-row justify-between items-start md:items-center">

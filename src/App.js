@@ -4,6 +4,8 @@ import {
   Switch, Route
 } from "react-router-dom";
 import Home from './pages/Home';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 import Contact from './pages/Contact';
 import About from './pages/About';
 import Courses from './pages/Courses';
@@ -18,6 +20,8 @@ function App() {
     <NavBar/>
     <Switch>
       <Route path="/" exact component={Home} />
+      <Route path="/login" exact component={LoginPage} />
+      <Route path="/signup" exact component={SignupPage} />
       <Route path="/courses" exact component={Courses} />
       <Route path="/about" exact component={About} />
       <Route path="/contact" exact component={Contact} />
