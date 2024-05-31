@@ -1,28 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { TokenContext } from '../../TokenContext';
 import axios from 'axios';
 
 const News = () => {
     const [sub, setSub] = useState('');
-    const [trigger, setTrigger] = useState(false); // State to trigger useEffect
-    const fetchUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/news';
+    const [trigger, setTrigger] = useState(false); 
+    const fetchUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/newsletter';
+    const { token } = useContext(TokenContext);
 
     useEffect(() => {
-        if (trigger) {
+        if (trigger && token) {
             async function getSub() {
                 try {
-                    const request = await axios.post(fetchUrl, {
+                    const response = await axios.post(fetchUrl, {
                         email: sub
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
                     });
-                    console.log('Subscription successful:', request.data);
+                    console.log('Subscription successful:', response.data);
                 } catch (error) {
                     console.error('Error sending email:', error);
                 } finally {
-                    setTrigger(false); // Reset the trigger
+                    setTrigger(false); 
                 }
             }
             getSub();
         }
-    }, [trigger, sub]);
+    }, [trigger, token, sub]);
 
     const handleSubscribe = () => {
         setTrigger(true);

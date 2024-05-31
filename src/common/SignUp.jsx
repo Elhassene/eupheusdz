@@ -1,9 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { TokenContext } from '../TokenContext';
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import Logo from '../images/logo.png';
 
 const SignUp = () => {
+    const { setToken } = useContext(TokenContext);
+    const history = useHistory();
+
+    const toHomePage = () => {
+        setTimeout(() => {
+            history.push('/courses');
+        }, 50);
+    };
+
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [registerListener, setRegisterListener] = useState(false);
+
+    const fetchUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/auth/register';
+
+    useEffect(() => {
+        if (registerListener) {
+            async function registerUser() {
+                try {
+                    const response = await axios.post(fetchUrl, {
+                        name: name,
+                        email: email,
+                        password: password,
+                        password_confirmation: confirmPassword
+                    });
+                    const receivedToken = response.data.access_token;
+                    setToken(receivedToken);
+                    console.log(receivedToken);
+                    console.log('mchat');
+                    toHomePage();
+                } catch (error) {
+                    if (error.response) {
+                        console.error('Response error:', error.response.status);
+                        console.error('Response data:', error.response.data);
+                    } else if (error.request) {
+                        console.error('Request error:', error.request);
+                    } else {
+                        console.error('Error:', error.message);
+                    }
+                }
+            }
+            registerUser();
+        }
+    }, [registerListener, name, email, password, confirmPassword, fetchUrl, setToken, toHomePage]);
+
+    const handleRegister = () => {
+        setRegisterListener(true);
+    };
+
     const [hidden, setHidden] = useState(true);
     const [isChecked, setIsChecked] = useState(false);
 
@@ -27,6 +80,8 @@ const SignUp = () => {
                         className="flex-1 outline-none"
                         type="text"
                         placeholder="Enter your Full name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         required
                     />
                 </div>
@@ -39,6 +94,8 @@ const SignUp = () => {
                         className="flex-1 outline-none"
                         type="email"
                         placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                     />
                 </div>
@@ -51,6 +108,8 @@ const SignUp = () => {
                         className="flex-1 outline-none"
                         type="password"
                         placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                     />
                 </div>
@@ -63,6 +122,8 @@ const SignUp = () => {
                         className="flex-1 outline-none"
                         type={hidden ? 'password' : 'text'}
                         placeholder="Confirm your password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                         required
                     />
                     <div onClick={handleHidden} className="cursor-pointer">
@@ -84,6 +145,7 @@ const SignUp = () => {
             <button
                 className={`w-full bg-blue-700 text-white py-2 rounded hover:bg-blue-600 ${!isChecked && 'opacity-50 cursor-not-allowed'}`}
                 disabled={!isChecked}
+                onClick={handleRegister}
             >
                 Sign Up
             </button>
@@ -92,7 +154,7 @@ const SignUp = () => {
                 <h3 className="mx-2 text-gray-500 cursor-pointer"><Link to="/login">OR LOG IN</Link></h3>
                 <div className="border-t border-gray-300 flex-grow"></div>
             </div>
-    </div>
+        </div>
     );
 };
 

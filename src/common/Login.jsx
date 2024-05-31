@@ -1,47 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { TokenContext } from '../TokenContext';
 import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import Logo from '../images/logo.png'
+import { Link, useHistory } from 'react-router-dom';
+import Logo from '../images/logo.png';
 
 const Login = () => {
+    const { setToken } = useContext(TokenContext);
+    const history = useHistory();
 
-    // const [email, setEmail] = useState('');
-    // const [password, setPassword] = useState('');
-    // const fetchUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/user'
+    const toHomePage = () => {
+        setTimeout(() => {
+          history.push('/courses');
+        }, 50);
+    };
 
-    // useEffect(() => {
-    //     async function getCourses() {
-    //         try {
-    //             const response = await axios.get(fetchUrl, {
-    //                 headers:{
-    //                     "Authorization": "Bearer 5|hV58FT8svysopWxa3IVNqLTQ6ynFT6WryqdGl7yC49ddf1e5"
-    //                 }
-    //             });
-    //             console.log('Data:', response.data);
-    //             console.log(response.status)
-    //         } catch (error) {
-    //             if (error.response) {
-    //                 // Server responded with a status other than 200 range
-    //                 console.error('Response error:', error.response.status);
-    //                 console.error('Response data:', error.response.data);
-    //             } else if (error.request) {
-    //                 // Request was made but no response received
-    //                 console.error('Request error:', error.request);
-    //             } else {
-    //                 // Something else happened in setting up the request
-    //                 console.error('Error:', error.message);
-    //             }
-    //         }
-    //     }
-    //     getCourses();
-    // }, []);
-    // const [toggle, setToggle] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loginListener, setLoginListener] = useState(false);
+    const fetchUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/auth/login';
+
+    useEffect(() => {
+        if (loginListener) {
+            async function loginUser() {
+                try {
+                    const response = await axios.post(fetchUrl, {
+                        email: email,
+                        password: password
+                    });
+                    const receivedToken = response.data.access_token;
+                    setToken(receivedToken);
+                    console.log(receivedToken);
+                    console.log('dkhal');
+                    toHomePage();
+                } catch (error) {
+                    if (error.response) {
+                        console.error('Response error:', error.response.status);
+                        console.error('Response data:', error.response.data);
+                    } else if (error.request) {
+                        console.error('Request error:', error.request);
+                    } else {
+                        console.error('Error:', error.message);
+                    }
+                }
+            }
+            loginUser();
+        }
+    }, [loginListener, email, password, fetchUrl, setToken]);
+
+    const handleLogin = () => {
+        setLoginListener(true);
+    };
+
     const [hidden, setHidden] = useState(true);
     const [isChecked, setIsChecked] = useState(false);
-
-    // const handleToggle = () => {
-    //     setToggle(!toggle);
-    // };
 
     const handleHidden = () => {
         setHidden(!hidden);
@@ -63,6 +75,8 @@ const Login = () => {
                         className="flex-1 outline-none"
                         type="email"
                         placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                     />
                 </div>
@@ -75,6 +89,8 @@ const Login = () => {
                         className="flex-1 outline-none"
                         type={hidden ? 'password' : 'text'}
                         placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                     />
                     <div onClick={handleHidden} className="cursor-pointer">
@@ -96,6 +112,7 @@ const Login = () => {
             <button
                 className={`w-full bg-green-700 text-white py-2 rounded hover:bg-green-600 ${!isChecked && 'opacity-50 cursor-not-allowed'}`}
                 disabled={!isChecked}
+                onClick={handleLogin}
             >
                 Login
             </button>
@@ -104,7 +121,6 @@ const Login = () => {
                 <h3 className="mx-2 text-gray-500 cursor-pointer"><Link to="/signup">OR SIGN UP</Link></h3>
                 <div className="border-t border-gray-300 flex-grow"></div>
             </div>
-
         </div>
     );
 };

@@ -1,17 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { Link, useLocation, useHistory } from 'react-router-dom';
+import { FaChalkboardTeacher, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import axios from 'axios';
-
+import { TokenContext } from '../../TokenContext';
 import logoimg from '../../images/logo.png';
+import guestPic from '../../images/geust.jpg';
 
 const NavBar = () => {
+    const { token, setToken } = useContext(TokenContext);
+    const history = useHistory();
+    const location = useLocation();
+
     const [show, setShow] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
     const [search, setSearch] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState(search);
     const [searchCourse, setSearchCourse] = useState([]);
 
     const fetchUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/feed';
-    const storagerUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/storage/';
+    const storageUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/storage/';
+
+    const logOut = () => {
+        localStorage.removeItem('localToken');
+        setToken(null);
+        setTimeout(() => {
+            history.push('/');
+        }, 50);
+    };
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -24,26 +39,20 @@ const NavBar = () => {
     }, [search]);
 
     useEffect(() => {
-        async function getSearchCourse() {
+        const getSearchCourse = async () => {
             if (debouncedSearch) {
                 try {
                     const request = await axios.get(fetchUrl, {
-                        params: {
-                            search: debouncedSearch
-                        }
+                        params: { search: debouncedSearch }
                     });
-                    setSearchCourse(request.data[0].data); // Assuming the data structure is similar to the initial fetch
+                    setSearchCourse(request.data[0].data);
                 } catch (error) {
                     console.error('Error fetching courses:', error);
                 }
             }
-        }
+        };
         getSearchCourse();
     }, [debouncedSearch]);
-
-    const location = useLocation();
-    const isLoginPage = location.pathname === '/login';
-    const isSignupPage = location.pathname === '/signup';
 
     const handleShow = () => {
         setShow(!show);
@@ -52,6 +61,9 @@ const NavBar = () => {
     const getLinkClassName = (path) => {
         return location.pathname === path ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-700 hover:text-blue-500';
     };
+
+    const isLoginPage = location.pathname === '/login';
+    const isSignupPage = location.pathname === '/signup';
 
     if (isLoginPage || isSignupPage) {
         return null;
@@ -88,7 +100,7 @@ const NavBar = () => {
                                     {searchCourse.map((course) => (
                                         <li key={course.id} className="p-2 hover:bg-gray-100 cursor-pointer">
                                             <div className="flex items-center">
-                                                <img className="w-10 h-10 rounded-full" src={`${storagerUrl}${course.user.profile.avatar_url}`} alt="Teacher" />
+                                                <img className="w-10 h-10 rounded-full" src={`${storageUrl}${course.user.profile.avatar_url}`} alt="Teacher" />
                                                 <div className="ml-4">
                                                     <h4 className="text-lg font-semibold">{course.user.name}</h4>
                                                     <h5 className="text-sm text-gray-600">{course.title}</h5>
@@ -106,15 +118,48 @@ const NavBar = () => {
                         <li className={`${getLinkClassName('/about')} cursor-pointer`}><Link to="/about">About Us</Link></li>
                         <li className={`${getLinkClassName('/contact')} cursor-pointer`}><Link to="/contact">Contact Us</Link></li>
                     </ul>
-                    <div className="px-4 py-2 bg-green-700 text-white border border-green-700 rounded hover:bg-white hover:text-green-700 cursor-pointer">
-                        <Link to='/login'>Log in</Link>
-                    </div>
-                    <div className="px-4 py-2 bg-blue-700 text-white border border-blue-700 rounded hover:bg-white hover:text-blue-700 cursor-pointer">
-                        <Link to='/signup'>Sign up</Link>
-                    </div>
-        
-                    {/* <Login />
-                    <SignUp /> */}
+                    {token ? (
+                        <div className="relative">
+                            <img
+                                src={guestPic}
+                                alt="Guest"
+                                className="h-14 w-14 rounded-full cursor-pointer"
+                                onClick={() => setShowDropdown(!showDropdown)}
+                            />
+                            {showDropdown && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+                                    <div className="px-4 py-3">
+                                        <span className="block text-sm text-gray-900">Ouazir Elhassene</span>
+                                        <span className="block text-sm text-gray-500 truncate">hassen@gmail.com</span>
+                                        <span className="block text-sm text-gray-500 truncate">Student</span>
+                                    </div>
+                                    <ul className="py-2">
+                                        <li className="px-4 py-2 text-sm bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold hover:from-green-600 hover:to-blue-600 cursor-pointer flex items-center">
+                                            <FaChalkboardTeacher className="mr-2" />
+                                            Upgrade to Teacher
+                                        </li>
+                                        <li className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center">
+                                            <FaUser className="mr-2" />
+                                            Profile
+                                        </li>
+                                        <li onClick={logOut} className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center">
+                                            <FaSignOutAlt className="mr-2" />
+                                            Sign out
+                                        </li>
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="flex space-x-4">
+                            <div className="px-4 py-2 bg-green-700 text-white border border-green-700 rounded hover:bg-white hover:text-green-700 cursor-pointer">
+                                <Link to='/login'>Log in</Link>
+                            </div>
+                            <div className="px-4 py-2 bg-blue-700 text-white border border-blue-700 rounded hover:bg-white hover:text-blue-700 cursor-pointer">
+                                <Link to='/signup'>Sign up</Link>
+                            </div>
+                        </div>
+                    )}
                     <button className="md:hidden flex items-center text-gray-700" onClick={handleShow}>
                         <svg className="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
@@ -127,7 +172,7 @@ const NavBar = () => {
                     <div className="relative">
                         <input
                             type="text"
-                            className="w-96 mr-24 p-2 pl-10 pr-8 text-sm border-2 border-black rounded-3xl focus:ring-2"
+                            className="w-full p-2 pl-10 text-sm border-2 border-black rounded-3xl focus:ring-2"
                             placeholder="What Do You Want To Learn Today?"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -143,12 +188,12 @@ const NavBar = () => {
                         </svg>
                     </div>
                     {searchCourse.length > 0 && (
-                        <div className="absolute mt-2 w-96 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+                        <div className="absolute mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-50">
                             <ul>
                                 {searchCourse.map((course) => (
                                     <li key={course.id} className="p-2 hover:bg-gray-100 cursor-pointer">
                                         <div className="flex items-center">
-                                            <img className="w-10 h-10 rounded-full" src={`${storagerUrl}${course.user.profile.avatar_url}`} alt="Teacher" />
+                                            <img className="w-10 h-10 rounded-full" src={`${storageUrl}${course.user.profile.avatar_url}`} alt="Teacher" />
                                             <div className="ml-4">
                                                 <h4 className="text-lg font-semibold">{course.user.name}</h4>
                                                 <h5 className="text-sm text-gray-600">{course.title}</h5>
