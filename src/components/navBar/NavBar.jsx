@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useLocation, useHistory } from 'react-router-dom';
-import { FaChalkboardTeacher, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { FaChalkboardTeacher, FaUser, FaSignOutAlt, FaHome, FaBook, FaInfoCircle, FaEnvelope } from 'react-icons/fa';
 import axios from 'axios';
 import { TokenContext } from '../../TokenContext';
 import logoimg from '../../images/logo.png';
@@ -18,7 +18,34 @@ const NavBar = () => {
     const [searchCourse, setSearchCourse] = useState([]);
 
     const fetchUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/feed';
+    const profileUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/user';
     const storageUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/storage/';
+
+    const [info, setInfo] = useState('')
+    useEffect(() => {
+        if (token) {
+            async function getUserInfo() {
+                try {
+                    const response = await axios.get(profileUrl, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    setInfo(response.data)
+                } catch (error) {
+                    if (error.response) {
+                        console.error('Response error:', error.response.status);
+                        console.error('Response data:', error.response.data);
+                    } else if (error.request) {
+                        console.error('Request error:', error.request);
+                    } else {
+                        console.error('Error:', error.message);
+                    }
+                }
+            }
+            getUserInfo();
+        }
+    }, [token]);
 
     const logOut = () => {
         localStorage.removeItem('localToken');
@@ -49,6 +76,8 @@ const NavBar = () => {
                 } catch (error) {
                     console.error('Error fetching courses:', error);
                 }
+            } else {
+                setSearchCourse([]);
             }
         };
         getSearchCourse();
@@ -94,7 +123,7 @@ const NavBar = () => {
                         >
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 1 0-14 0 7 7 0 0 0 14 0z" />
                         </svg>
-                        {searchCourse.length > 0 && (
+                        {search && searchCourse.length > 0 && (
                             <div className="absolute mt-2 w-96 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
                                 <ul>
                                     {searchCourse.map((course) => (
@@ -113,10 +142,10 @@ const NavBar = () => {
                         )}
                     </div>
                     <ul className="hidden md:flex space-x-4 font-bold">
-                        <li className={`${getLinkClassName('/')} cursor-pointer`}><Link to="/">Home</Link></li>
-                        <li className={`${getLinkClassName('/courses')} cursor-pointer`}><Link to="/courses">Courses</Link></li>
-                        <li className={`${getLinkClassName('/about')} cursor-pointer`}><Link to="/about">About Us</Link></li>
-                        <li className={`${getLinkClassName('/contact')} cursor-pointer`}><Link to="/contact">Contact Us</Link></li>
+                        <li className={`${getLinkClassName('/')} cursor-pointer`}><Link to="/"><FaHome className="inline-block mr-2" />Home</Link></li>
+                        <li className={`${getLinkClassName('/courses')} cursor-pointer`}><Link to="/courses"><FaBook className="inline-block mr-2" />Courses</Link></li>
+                        <li className={`${getLinkClassName('/about')} cursor-pointer`}><Link to="/about"><FaInfoCircle className="inline-block mr-2" />About Us</Link></li>
+                        <li className={`${getLinkClassName('/contact')} cursor-pointer`}><Link to="/contact"><FaEnvelope className="inline-block mr-2" />Contact Us</Link></li>
                     </ul>
                     {token ? (
                         <div className="relative">
@@ -129,9 +158,9 @@ const NavBar = () => {
                             {showDropdown && (
                                 <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
                                     <div className="px-4 py-3">
-                                        <span className="block text-sm text-gray-900">Ouazir Elhassene</span>
-                                        <span className="block text-sm text-gray-500 truncate">hassen@gmail.com</span>
-                                        <span className="block text-sm text-gray-500 truncate">Student</span>
+                                        <span className="block text-sm text-gray-900">{info.name}</span>
+                                        <span className="block text-sm text-gray-500 truncate">{info.email}</span>
+                                        <span className="block text-sm text-gray-500 truncate">{info.category}</span>
                                     </div>
                                     <ul className="py-2">
                                         <li className="px-4 py-2 text-sm bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold hover:from-green-600 hover:to-blue-600 cursor-pointer flex items-center">
@@ -152,10 +181,10 @@ const NavBar = () => {
                         </div>
                     ) : (
                         <div className="flex space-x-4">
-                            <div className="px-4 py-2 bg-green-700 text-white border border-green-700 rounded hover:bg-white hover:text-green-700 cursor-pointer">
+                            <div className="px-4 py-2 bg-green-700 text-white border border-green-700 rounded hover:bg-white hover:text-green-700 cursor-pointer text-sm md:text-base">
                                 <Link to='/login'>Log in</Link>
                             </div>
-                            <div className="px-4 py-2 bg-blue-700 text-white border border-blue-700 rounded hover:bg-white hover:text-blue-700 cursor-pointer">
+                            <div className="px-4 py-2 bg-blue-700 text-white border border-blue-700 rounded hover:bg-white hover:text-blue-700 cursor-pointer text-sm md:text-base">
                                 <Link to='/signup'>Sign up</Link>
                             </div>
                         </div>
@@ -167,51 +196,49 @@ const NavBar = () => {
                     </button>
                 </div>
             </div>
-            {show && (
-                <div className="md:hidden">
-                    <div className="relative">
-                        <input
-                            type="text"
-                            className="w-full p-2 pl-10 text-sm border-2 border-black rounded-3xl focus:ring-2"
-                            placeholder="What Do You Want To Learn Today?"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                        <svg
-                            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-800"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 1 0-14 0 7 7 0 0 0 14 0z" />
-                        </svg>
-                    </div>
-                    {searchCourse.length > 0 && (
-                        <div className="absolute mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-50">
-                            <ul>
-                                {searchCourse.map((course) => (
-                                    <li key={course.id} className="p-2 hover:bg-gray-100 cursor-pointer">
-                                        <div className="flex items-center">
-                                            <img className="w-10 h-10 rounded-full" src={`${storageUrl}${course.user.profile.avatar_url}`} alt="Teacher" />
-                                            <div className="ml-4">
-                                                <h4 className="text-lg font-semibold">{course.user.name}</h4>
-                                                <h5 className="text-sm text-gray-600">{course.title}</h5>
-                                            </div>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                    <ul className="space-y-2 p-4">
-                        <li className={`${getLinkClassName('/')} cursor-pointer`}><Link to="/">Home</Link></li>
-                        <li className={`${getLinkClassName('/courses')} cursor-pointer`}><Link to="/courses">Courses</Link></li>
-                        <li className={`${getLinkClassName('/about')} cursor-pointer`}><Link to="/about">About Us</Link></li>
-                        <li className={`${getLinkClassName('/contact')} cursor-pointer`}><Link to="/contact">Contact Us</Link></li>
-                    </ul>
+            <div className={`md:hidden transition-all-transform duration-700 ease-in-out ${show ? 'max-h-screen' : 'max-h-0 overflow-hidden'}`}>
+                <div className="relative">
+                    <input
+                        type="text"
+                        className="w-full p-2 pl-10 text-sm border-2 border-black rounded-3xl focus:ring-2"
+                        placeholder="What Do You Want To Learn Today?"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                    <svg
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-800"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 1 0-14 0 7 7 0 0 0 14 0z" />
+                    </svg>
                 </div>
-            )}
+                {search && searchCourse.length > 0 && (
+                    <div className="absolute mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+                        <ul>
+                            {searchCourse.map((course) => (
+                                <li key={course.id} className="p-2 hover:bg-gray-100 cursor-pointer">
+                                    <div className="flex items-center">
+                                        <img className="w-10 h-10 rounded-full" src={`${storageUrl}${course.user.profile.avatar_url}`} alt="Teacher" />
+                                        <div className="ml-4">
+                                            <h4 className="text-lg font-semibold">{course.user.name}</h4>
+                                            <h5 className="text-sm text-gray-600">{course.title}</h5>
+                                        </div>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+                <ul className="space-y-2 p-4">
+                    <li className={`${getLinkClassName('/')} cursor-pointer`}><Link to="/"><FaHome className="inline-block mr-2" />Home</Link></li>
+                    <li className={`${getLinkClassName('/courses')} cursor-pointer`}><Link to="/courses"><FaBook className="inline-block mr-2" />Courses</Link></li>
+                    <li className={`${getLinkClassName('/about')} cursor-pointer`}><Link to="/about"><FaInfoCircle className="inline-block mr-2" />About Us</Link></li>
+                    <li className={`${getLinkClassName('/contact')} cursor-pointer`}><Link to="/contact"><FaEnvelope className="inline-block mr-2" />Contact Us</Link></li>
+                </ul>
+            </div>
         </nav>
     );
 };
