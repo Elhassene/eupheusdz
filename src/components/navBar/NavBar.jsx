@@ -92,6 +92,7 @@ const NavBar = () => {
             });
         }
         setSearch('');
+        setShow(false)
     };
     
 
