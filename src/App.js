@@ -14,6 +14,7 @@ import ScrollToTop from './common/ScrollToTop';
 import NavBar from './components/navBar/NavBar';
 import Footer from './components/footer/Footer';
 import { TokenProvider } from './TokenContext';
+import CourseView from './pages/CourseView';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/login" exact component={LoginPage} />
           <Route path="/signup" exact component={SignupPage} />
           <Route path="/courses" exact component={Courses} />
+          <Route path="/course-preview" exact component={CourseView} />
           <Route path="/about" exact component={About} />
           <Route path="/contact" exact component={Contact} />
         </Switch>

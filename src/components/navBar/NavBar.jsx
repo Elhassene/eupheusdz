@@ -21,7 +21,8 @@ const NavBar = () => {
     const profileUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/user';
     const storageUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/storage/';
 
-    const [info, setInfo] = useState('')
+    const [info, setInfo] = useState('');
+
     useEffect(() => {
         if (token) {
             async function getUserInfo() {
@@ -31,16 +32,9 @@ const NavBar = () => {
                             Authorization: `Bearer ${token}`
                         }
                     });
-                    setInfo(response.data)
+                    setInfo(response.data);
                 } catch (error) {
-                    if (error.response) {
-                        console.error('Response error:', error.response.status);
-                        console.error('Response data:', error.response.data);
-                    } else if (error.request) {
-                        console.error('Request error:', error.request);
-                    } else {
-                        console.error('Error:', error.message);
-                    }
+                    console.error('Error fetching user info:', error);
                 }
             }
             getUserInfo();
@@ -82,6 +76,24 @@ const NavBar = () => {
         };
         getSearchCourse();
     }, [debouncedSearch]);
+
+    const handleSeeMore = (course) => {
+        const currentPath = location.pathname;
+        const newPath = '/course-preview';
+        if (currentPath === newPath) {
+            history.replace({
+                pathname: newPath,
+                state: { course },
+            });
+        } else {
+            history.push({
+                pathname: newPath,
+                state: { course },
+            });
+        }
+        setSearch('');
+    };
+    
 
     const handleShow = () => {
         setShow(!show);
@@ -127,7 +139,7 @@ const NavBar = () => {
                             <div className="absolute mt-2 w-96 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
                                 <ul>
                                     {searchCourse.map((course) => (
-                                        <li key={course.id} className="p-2 hover:bg-gray-100 cursor-pointer">
+                                        <li key={course.id} className="p-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleSeeMore(course)}>
                                             <div className="flex items-center">
                                                 <img className="w-10 h-10 rounded-full" src={`${storageUrl}${course.user.profile.avatar_url}`} alt="Teacher" />
                                                 <div className="ml-4">
@@ -142,10 +154,10 @@ const NavBar = () => {
                         )}
                     </div>
                     <ul className="hidden md:flex space-x-4 font-bold">
-                        <li className={`${getLinkClassName('/')} cursor-pointer`}><Link to="/"><FaHome className="inline-block mr-2" />Home</Link></li>
-                        <li className={`${getLinkClassName('/courses')} cursor-pointer`}><Link to="/courses"><FaBook className="inline-block mr-2" />Courses</Link></li>
-                        <li className={`${getLinkClassName('/about')} cursor-pointer`}><Link to="/about"><FaInfoCircle className="inline-block mr-2" />About Us</Link></li>
-                        <li className={`${getLinkClassName('/contact')} cursor-pointer`}><Link to="/contact"><FaEnvelope className="inline-block mr-2" />Contact Us</Link></li>
+                        <li className={`${getLinkClassName('/')} cursor-pointer`}><Link to="/"><FaHome className="inline-block mr-2 mb-1" />Home</Link></li>
+                        <li className={`${getLinkClassName('/courses')} cursor-pointer`}><Link to="/courses"><FaBook className="inline-block mr-2 mb-1" />Courses</Link></li>
+                        <li className={`${getLinkClassName('/about')} cursor-pointer`}><Link to="/about"><FaInfoCircle className="inline-block mr-2 mb-1" />About Us</Link></li>
+                        <li className={`${getLinkClassName('/contact')} cursor-pointer`}><Link to="/contact"><FaEnvelope className="inline-block mr-2 mb-1" />Contact Us</Link></li>
                     </ul>
                     {token ? (
                         <div className="relative">
@@ -219,7 +231,7 @@ const NavBar = () => {
                     <div className="absolute mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-50">
                         <ul>
                             {searchCourse.map((course) => (
-                                <li key={course.id} className="p-2 hover:bg-gray-100 cursor-pointer">
+                                <li key={course.id} className="p-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleSeeMore(course)}>
                                     <div className="flex items-center">
                                         <img className="w-10 h-10 rounded-full" src={`${storageUrl}${course.user.profile.avatar_url}`} alt="Teacher" />
                                         <div className="ml-4">
@@ -233,10 +245,10 @@ const NavBar = () => {
                     </div>
                 )}
                 <ul className="space-y-2 p-4">
-                    <li className={`${getLinkClassName('/')} cursor-pointer`}><Link to="/"><FaHome className="inline-block mr-2" />Home</Link></li>
-                    <li className={`${getLinkClassName('/courses')} cursor-pointer`}><Link to="/courses"><FaBook className="inline-block mr-2" />Courses</Link></li>
-                    <li className={`${getLinkClassName('/about')} cursor-pointer`}><Link to="/about"><FaInfoCircle className="inline-block mr-2" />About Us</Link></li>
-                    <li className={`${getLinkClassName('/contact')} cursor-pointer`}><Link to="/contact"><FaEnvelope className="inline-block mr-2" />Contact Us</Link></li>
+                    <li className={`${getLinkClassName('/')} cursor-pointer`}><Link to="/"><FaHome className="inline-block mr-2 mb-1" />Home</Link></li>
+                    <li className={`${getLinkClassName('/courses')} cursor-pointer`}><Link to="/courses"><FaBook className="inline-block mr-2 mb-1" />Courses</Link></li>
+                    <li className={`${getLinkClassName('/about')} cursor-pointer`}><Link to="/about"><FaInfoCircle className="inline-block mr-2 mb-1" />About Us</Link></li>
+                    <li className={`${getLinkClassName('/contact')} cursor-pointer`}><Link to="/contact"><FaEnvelope className="inline-block mr-2 mb-1" />Contact Us</Link></li>
                 </ul>
             </div>
         </nav>

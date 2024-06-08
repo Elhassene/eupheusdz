@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import axios from 'axios';
 
 const CourseCard = ({ coursesCard }) => {
     const [courses, setCourses] = useState([]);
+    const history = useHistory();
     const [heartStates, setHeartStates] = useState([]);
     const fetchUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/feed';
     const storagerUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/storage/';
@@ -32,6 +34,13 @@ const CourseCard = ({ coursesCard }) => {
         setHeartStates(updatedHeartStates);
     };
 
+    const handleSeeMore = (course) => {
+        history.push({
+          pathname: '/course-preview',
+          state: { course },
+        });
+      };
+
     const totalPages = Math.ceil(coursesCard.length / cardsPerPage);
     const startIndex = (currentPage - 1) * cardsPerPage;
 
@@ -52,10 +61,6 @@ const CourseCard = ({ coursesCard }) => {
                         <label className='block mb-2'><input type='checkbox' className='mr-2' />Biology</label>
                         <label className='block mb-2'><input type='checkbox' className='mr-2' />Business</label>
                         <label className='block mb-2'><input type='checkbox' className='mr-2' />Electronics</label>
-                        <label className='block mb-2'><input type='checkbox' className='mr-2' />Petrochemistry</label>
-                        <label className='block mb-2'><input type='checkbox' className='mr-2' />Medicine</label>
-                        <label className='block mb-2'><input type='checkbox' className='mr-2' />Art</label>
-                        <label className='block mb-2'><input type='checkbox' className='mr-2' />Foreign Languages</label>
                         <label className='block mb-2'><input type='checkbox' className='mr-2' />English</label>
                         <label className='block mb-2'><input type='checkbox' className='mr-2' />French</label>
                     </div>
@@ -89,10 +94,10 @@ const CourseCard = ({ coursesCard }) => {
                                     <p className={`text-lg font-semibold ${val.status === 'closed' ? 'text-red-600' : 'text-green-600'}`}>{val.status}</p>
                                 </div>
                                 <div className='flex justify-between items-center p-4 border-t'>
-                                    <button className='bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300'>See more</button>
+                                    <button className='bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300' onClick={() => handleSeeMore(val)}>See more</button>
                                     <p className='flex items-center'>
                                         {val.like_count} <span onClick={() => handleHeart(index)} className='ml-2 cursor-pointer'>
-                                            {heartStates[startIndex + index] ? <FaHeart className='text-red-500' /> : <FaRegHeart />}
+                                            {heartStates[index] ? <FaHeart className='text-red-500' /> : <FaRegHeart />}
                                         </span>
                                     </p>
                                 </div>
@@ -111,9 +116,18 @@ const CourseCard = ({ coursesCard }) => {
                         {i + 1}
                     </button>
                 ))}
-            </div>
+           </div>
         </div>
     );
 };
 
 export default CourseCard;
+
+
+
+
+
+
+
+
+
