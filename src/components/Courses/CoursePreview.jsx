@@ -1,20 +1,110 @@
-import React from 'react';
+import {React, useContext, useEffect, useState} from 'react';
+import { TokenContext } from '../../TokenContext';
 import { useLocation } from 'react-router-dom';
-import { FaRegHeart, FaReply, FaUserGraduate, FaPaperPlane, FaFileAlt, FaHeart, FaTags, FaMapMarkerAlt, FaCalendarAlt, FaCommentAlt, FaUserFriends, FaAward } from 'react-icons/fa';
+import { FaReply, FaUserGraduate, FaPaperPlane, FaFileAlt, FaHeart, FaTags, FaMapMarkerAlt, FaCalendarAlt, FaCommentAlt, FaUserFriends, FaAward } from 'react-icons/fa';
+import axios from 'axios';
+import { UserContext } from '../../UserContext';
 
 const CoursePreview = () => {
+
+  const location = useLocation();
+  const courseData = location.state.course;
+
+
+  
+  const {info} = useContext(UserContext)
+
+  const [existingComments, setExistingComments] = useState([]);
+  const [comment, setComment] = useState('');
+  const [reply, setReply] = useState('');
+  const [trigger, setTrigger] = useState(false);
+  const [replyTrigger, setReplyTrigger] = useState(false);
+  const {token} = useContext(TokenContext);
+  const handleComment = ()=>{
+    setTrigger(true);
+  }
+
+  const commentUrl = `https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/announcements/${courseData.id}/comments`;
+  const replyCommentUrl = `https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/announcements/${courseData.id}/${comment.id}/replies`;
+  const viewcommentUrl = `https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/announcements/${courseData.id}`;
+
+  useEffect(()=>{
+    if(trigger && token){
+      async function getComment () {
+        try{
+          const response = await axios.post(commentUrl, {
+            comment: comment
+          }, {
+            headers: {
+              Authorization: `Bearer ${token}`
+          }
+          });
+          console.log('comment successful', response.data)
+        } catch(error){
+          console.log('comment failed', error)
+        } finally{
+          setTrigger(false);
+          setComment('');
+        }
+      }
+      getComment()
+    }
+  }, [comment, trigger, token, info, courseData, commentUrl])
+
+  useEffect(()=>{
+    if(replyTrigger && token){
+      async function postReply () {
+        try{
+          const response = await axios.post(replyCommentUrl, {
+            reply : reply
+          }, {
+            headers: {
+              Authorization: `Bearer ${token}`
+          }
+          });
+          console.log('reply successful', response.data)
+        } catch(error){
+          console.log('reply failed', error)
+        } finally{
+          setReplyTrigger(false);
+          setReply('');
+        }
+      }
+      postReply()
+    }
+  }, [reply, token, replyCommentUrl, replyTrigger])
+
+  useEffect(()=>{
+      async function getCommentView () {
+        try{
+          const response = await axios.get(viewcommentUrl, {
+            headers: {
+              Authorization: `Bearer ${token}`
+          }
+          });
+          setExistingComments(response.data.comment);
+          console.log('all comments', response.data.comment);
+        } catch(error){
+          console.log('getting all comments failed', error)
+        } finally{
+          setTrigger(false)
+        }
+      }
+      getCommentView()
+  }, [trigger, token, viewcommentUrl])
+
+  
+
   const storagerUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/storage/';
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 to month because it starts from 0
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
 
-  const location = useLocation();
-  const courseData = location.state.course;
 
   return (
     <div className="p-8 mt-20 bg-gray-200">
@@ -106,37 +196,53 @@ const CoursePreview = () => {
               type="text"
               className="border rounded-lg p-2 w-full pr-10"
               placeholder="Write a comment..."
+              value={comment}
+              onChange={((e)=>setComment(e.target.value))}
             />
-            <FaPaperPlane className="absolute top-2 right-2 cursor-pointer text-gray-500" />
+            <FaPaperPlane className="absolute top-2 right-2 cursor-pointer text-gray-500" onClick={handleComment}/>
           </div>
         </div>
         <div>
-          {courseData.comments && courseData.comments.map((comment) => (
-            <div key={comment.id} className="mb-4 p-4 border rounded-lg">
-              <div className="flex items-center mb-2">
-                <div className="ml-2">
-                  <h4 className="font-semibold">{comment.user.name}</h4>
-                  <p className="text-sm text-gray-600">{new Date(comment.created_at).toLocaleString()}</p>
-                </div>
-              </div>
-              <p className="text-gray-800 mb-2">{comment.text}</p>
-              <div className="flex items-center">
-                <FaRegHeart className="cursor-pointer" />
-                <span className="ml-2">{comment.like_count}</span>
-                <FaReply className="cursor-pointer ml-4" />
-              </div>
-              <div className="mt-2">
-                <div className="relative">
-                  <input
-                    type="text"
-                    className="border rounded-lg p-2 w-full"
-                    placeholder="Write a reply..."
-                  />
-                  <FaPaperPlane className="absolute top-2 right-2 cursor-pointer text-gray-500" />
-                </div>
-              </div>
+        {existingComments && existingComments.map((comment) => (
+        <div key={comment.id} className="mb-4 p-4 border rounded-lg">
+          <div className="flex items-center mb-2">
+            <div className="ml-2">
+              <h4 className="font-semibold">User ID: {comment.user_id}</h4>
+              <p className="text-sm text-gray-600">{new Date(comment.created_at).toLocaleString()}</p>
             </div>
-          ))}
+          </div>
+          <p className="text-gray-800 mb-2">{comment.comment}</p>
+          <div className="flex items-center">
+          </div>
+          <div className="mt-2">
+            <div className="relative">
+              <input
+                type="text"
+                className="border rounded-lg p-2 w-full"
+                placeholder="Write a reply..."
+                value={reply}
+                onChange={((e)=>setReply(e.target.value))}
+              />
+              <FaReply className="absolute top-2 right-2 cursor-pointer text-gray-500" />
+            </div>
+          </div>
+          {comment.reply && comment.reply.length > 0 && (
+            <div className="ml-6 mt-4">
+              {comment.reply.map((reply) => (
+                <div key={reply.id} className="mb-2 p-2 border rounded-lg bg-gray-100">
+                  <div className="flex items-center mb-1">
+                    <div className="ml-2">
+                      <h5 className="font-semibold">User ID: {reply.user_id}</h5>
+                      <p className="text-sm text-gray-600">{new Date(reply.created_at).toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-800">{reply.comment}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
         </div>
       </div>
     </div>

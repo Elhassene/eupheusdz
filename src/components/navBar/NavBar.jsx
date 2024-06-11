@@ -3,8 +3,10 @@ import { Link, useLocation, useHistory } from 'react-router-dom';
 import { FaChalkboardTeacher, FaUser, FaSignOutAlt, FaHome, FaBook, FaInfoCircle, FaEnvelope } from 'react-icons/fa';
 import axios from 'axios';
 import { TokenContext } from '../../TokenContext';
+import { UserContext } from '../../UserContext';
 import logoimg from '../../images/logo.png';
 import guestPic from '../../images/geust.jpg';
+import { FiUpload } from 'react-icons/fi';
 
 const NavBar = () => {
     const { token, setToken } = useContext(TokenContext);
@@ -18,32 +20,15 @@ const NavBar = () => {
     const [searchCourse, setSearchCourse] = useState([]);
 
     const fetchUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/feed';
-    const profileUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/user';
     const storageUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/storage/';
 
-    const [info, setInfo] = useState('');
+    const {info} = useContext(UserContext)
 
-    useEffect(() => {
-        if (token) {
-            async function getUserInfo() {
-                try {
-                    const response = await axios.get(profileUrl, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    });
-                    setInfo(response.data);
-                } catch (error) {
-                    console.error('Error fetching user info:', error);
-                }
-            }
-            getUserInfo();
-        }
-    }, [token]);
 
     const logOut = () => {
         localStorage.removeItem('localToken');
         setToken(null);
+        setShowDropdown(false)
         setTimeout(() => {
             history.push('/');
         }, 50);
@@ -106,8 +91,9 @@ const NavBar = () => {
 
     const isLoginPage = location.pathname === '/login';
     const isSignupPage = location.pathname === '/signup';
+    const isUploadCoursePage = location.pathname === '/upload-course';
 
-    if (isLoginPage || isSignupPage) {
+    if (isLoginPage || isSignupPage || isUploadCoursePage) {
         return null;
     }
 
@@ -176,10 +162,20 @@ const NavBar = () => {
                                         <span className="block text-sm text-gray-500 truncate">{info.category}</span>
                                     </div>
                                     <ul className="py-2">
-                                        <li className="px-4 py-2 text-sm bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold hover:from-green-600 hover:to-blue-600 cursor-pointer flex items-center">
+                                        {info.category === 'student' ? (
+                                            <li className="px-4 py-2 text-sm bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold hover:from-green-600 hover:to-blue-600 cursor-pointer flex items-center">
                                             <FaChalkboardTeacher className="mr-2" />
                                             Upgrade to Teacher
                                         </li>
+                                        ): (
+                                            <Link to='/upload-course'>
+                                            <li className="px-4 py-2 text-sm bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold hover:from-green-600 hover:to-blue-600 cursor-pointer flex items-center">
+                                            <FiUpload className="mr-2" />
+                                            Upload a course
+                                        </li></Link>
+                                        )}
+                                        
+                                        
                                         <li className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center">
                                             <FaUser className="mr-2" />
                                             Profile

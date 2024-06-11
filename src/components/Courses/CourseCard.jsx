@@ -42,7 +42,7 @@ const CourseCard = ({ coursesCard }) => {
       };
 
     const totalPages = Math.ceil(coursesCard.length / cardsPerPage);
-    const startIndex = (currentPage - 1) * cardsPerPage;
+    // const startIndex = (currentPage - 1) * cardsPerPage;
 
     return (
         <div className='p-8 mt-20'>

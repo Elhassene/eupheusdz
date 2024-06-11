@@ -1,4 +1,3 @@
-// App.js
 import './App.css';
 import {
   HashRouter as Router,
@@ -15,10 +14,14 @@ import NavBar from './components/navBar/NavBar';
 import Footer from './components/footer/Footer';
 import { TokenProvider } from './TokenContext';
 import CourseView from './pages/CourseView';
+import AnnoncementPage from './pages/AnnoncementPage';
+import { UserProvider } from './UserContext';
+
 
 function App() {
   return (
     <TokenProvider>
+      <UserProvider>
       <Router>
         <ScrollToTop />
         <NavBar />
@@ -28,11 +31,13 @@ function App() {
           <Route path="/signup" exact component={SignupPage} />
           <Route path="/courses" exact component={Courses} />
           <Route path="/course-preview" exact component={CourseView} />
+          <Route path="/upload-course" exact component={AnnoncementPage} />
           <Route path="/about" exact component={About} />
           <Route path="/contact" exact component={Contact} />
         </Switch>
         <Footer />
       </Router>
+      </UserProvider>
     </TokenProvider>
   );
 }
