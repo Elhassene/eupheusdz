@@ -21,7 +21,6 @@ const NavBar = () => {
 
     const fetchUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/feed';
     const storageUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/storage/';
-
     const {info} = useContext(UserContext)
 
 
@@ -149,9 +148,9 @@ const NavBar = () => {
                     {token ? (
                         <div className="relative">
                             <img
-                                src={guestPic}
+                                src={info.profile && info.profile.avatar_url ? `${storageUrl}${info.profile.avatar_url}` : guestPic}
                                 alt="Guest"
-                                className="h-14 w-14 rounded-full cursor-pointer"
+                                className="h-12 w-12 rounded-full cursor-pointer"
                                 onClick={() => setShowDropdown(!showDropdown)}
                             />
                             {showDropdown && (

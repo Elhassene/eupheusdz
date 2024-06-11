@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { FaReply, FaUserGraduate, FaPaperPlane, FaFileAlt, FaHeart, FaTags, FaMapMarkerAlt, FaCalendarAlt, FaCommentAlt, FaUserFriends, FaAward } from 'react-icons/fa';
 import axios from 'axios';
 import { UserContext } from '../../UserContext';
+import geustPic from '../../images/geust.jpg'
 
 const CoursePreview = () => {
 
@@ -206,8 +207,13 @@ const CoursePreview = () => {
         {existingComments && existingComments.map((comment) => (
         <div key={comment.id} className="mb-4 p-4 border rounded-lg">
           <div className="flex items-center mb-2">
+          <img
+            className="w-10 h-10 rounded-full"
+            src={comment.user.profile && comment.user.profile.avatar_url ? `${storagerUrl}${comment.user.profile.avatar_url}` : geustPic}
+            alt="Mola comment"
+          />
             <div className="ml-2">
-              <h4 className="font-semibold">User ID: {comment.user_id}</h4>
+              <h4 className="font-semibold pb-2">{comment.user.name}</h4>
               <p className="text-sm text-gray-600">{new Date(comment.created_at).toLocaleString()}</p>
             </div>
           </div>
