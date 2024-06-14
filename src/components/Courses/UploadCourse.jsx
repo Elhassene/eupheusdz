@@ -129,7 +129,7 @@ const UploadCourse = () => {
                   english
                 </button>
                 <button value="computer science" onClick={handleFieldChange} className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                  Computer science
+                  computer science
                 </button>
                 <button value="mathematics" onClick={handleFieldChange} className="block w-full text-left px-4 py-2 hover:bg-gray-100">
                   mathematics
@@ -252,8 +252,8 @@ const UploadCourse = () => {
                 <button value="online" onClick={handleTypeChange} className="block w-full text-left px-4 py-2 hover:bg-gray-100">
                   Online
                 </button>
-                <button value="in-person" onClick={handleTypeChange} className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                  offline
+                <button value="offline" onClick={handleTypeChange} className="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                  Offline
                 </button>
               </div>
             )}

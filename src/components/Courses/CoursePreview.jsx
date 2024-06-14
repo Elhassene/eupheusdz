@@ -17,16 +17,18 @@ const CoursePreview = () => {
 
   const [existingComments, setExistingComments] = useState([]);
   const [comment, setComment] = useState('');
-  const [reply, setReply] = useState('');
+  const [replies, setReplies] = useState('');
   const [trigger, setTrigger] = useState(false);
   const [replyTrigger, setReplyTrigger] = useState(false);
+  const [replyCommentId, setReplyCommentId] = useState(null)
+
   const {token} = useContext(TokenContext);
   const handleComment = ()=>{
     setTrigger(true);
   }
 
   const commentUrl = `https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/announcements/${courseData.id}/comments`;
-  const replyCommentUrl = `https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/announcements/${courseData.id}/${comment.id}/replies`;
+  const replyCommentUrl = `https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/announcements/${courseData.id}/comments/${replyCommentId}/replies`;
   const viewcommentUrl = `https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/announcements/${courseData.id}`;
 
   useEffect(()=>{
@@ -52,29 +54,32 @@ const CoursePreview = () => {
     }
   }, [comment, trigger, token, info, courseData, commentUrl])
 
-  useEffect(()=>{
-    if(replyTrigger && token){
-      async function postReply () {
-        try{
+  useEffect(() => {
+    if (replyTrigger && token) {
+      async function postReply() {
+        try {
           const response = await axios.post(replyCommentUrl, {
-            reply : reply
+            reply: replies[replyCommentId]
           }, {
             headers: {
               Authorization: `Bearer ${token}`
-          }
+            }
           });
-          console.log('reply successful', response.data)
-        } catch(error){
-          console.log('reply failed', error)
-        } finally{
+          console.log('reply successful', response.data);
+          setReplies({
+            ...replies,
+            [replyCommentId]: ''
+          });
+        } catch (error) {
+          console.log('reply failed', error);
+        } finally {
           setReplyTrigger(false);
-          setReply('');
         }
       }
-      postReply()
+      postReply();
     }
-  }, [reply, token, replyCommentUrl, replyTrigger])
-
+  }, [replyTrigger, token, replyCommentUrl, replyCommentId, replies]);
+  
   useEffect(()=>{
       async function getCommentView () {
         try{
@@ -217,19 +222,25 @@ const CoursePreview = () => {
               <p className="text-sm text-gray-600">{new Date(comment.created_at).toLocaleString()}</p>
             </div>
           </div>
-          <p className="text-gray-800 mb-2">{comment.comment}</p>
+          <p className="text-gray-800 mb-2 ml-2">{comment.comment}</p>
           <div className="flex items-center">
           </div>
           <div className="mt-2">
             <div className="relative">
-              <input
-                type="text"
-                className="border rounded-lg p-2 w-full"
-                placeholder="Write a reply..."
-                value={reply}
-                onChange={((e)=>setReply(e.target.value))}
-              />
-              <FaReply className="absolute top-2 right-2 cursor-pointer text-gray-500" />
+            <input
+              type="text"
+              className="border rounded-lg p-2 w-full"
+              placeholder="Write a reply..."
+              value={replies[comment.id] || ''}
+              onChange={(e) => {
+                setReplies({
+                  ...replies,
+                  [comment.id]: e.target.value
+                });
+                setReplyCommentId(comment.id);
+              }}
+            />
+              <FaReply className="absolute top-2 right-2 cursor-pointer text-gray-500" onClick={()=>setReplyTrigger(true)} />
             </div>
           </div>
           {comment.reply && comment.reply.length > 0 && (
@@ -237,12 +248,17 @@ const CoursePreview = () => {
               {comment.reply.map((reply) => (
                 <div key={reply.id} className="mb-2 p-2 border rounded-lg bg-gray-100">
                   <div className="flex items-center mb-1">
+                  <img
+                  className="w-10 h-10 rounded-full"
+                  src={reply.user.profile && reply.user.profile.avatar_url ? `${storagerUrl}${reply.user.profile.avatar_url}` : geustPic}
+                  alt="Mola reply"
+                  />
                     <div className="ml-2">
-                      <h5 className="font-semibold">User ID: {reply.user_id}</h5>
+                      <h5 className="font-semibold">{reply.user.name}</h5>
                       <p className="text-sm text-gray-600">{new Date(reply.created_at).toLocaleString()}</p>
                     </div>
                   </div>
-                  <p className="text-gray-800">{reply.comment}</p>
+                  <p className="text-gray-800 ml-2">{reply.reply}</p>
                 </div>
               ))}
             </div>

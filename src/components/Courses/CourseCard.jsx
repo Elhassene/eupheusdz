@@ -4,26 +4,40 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import axios from 'axios';
 
 const CourseCard = ({ coursesCard }) => {
-    const [courses, setCourses] = useState([]);
+    const [allCourses, setAllCourses] = useState([]);
+    const [filteredCourses, setFilteredCourses] = useState([]);
     const history = useHistory();
+    const [filter, setFilter] = useState('all');
     const [heartStates, setHeartStates] = useState([]);
     const fetchUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/api/feed';
     const storagerUrl = 'https://marine-dragonfly-e-learning-00af8488.koyeb.app/storage/';
 
     useEffect(() => {
-        async function getCourses() {
+        const getAllCourses = async () => {
             try {
                 const request = await axios.get(fetchUrl);
-                const responseData = request.data[0];
-                const coursesData = responseData.data;
-                setCourses(coursesData);
-                setHeartStates(coursesData.map(() => false));
+                const responseData = request.data[0].data;
+                setAllCourses(responseData);
+                setFilteredCourses(responseData);
+                setHeartStates(responseData.map(() => false));
             } catch (error) {
                 console.error('Error fetching courses:', error);
             }
-        }
-        getCourses();
+        };
+        getAllCourses();
     }, []);
+
+    useEffect(() => {
+        const filterCourses = () => {
+            if (filter && filter !== 'all') {
+                const filtered = allCourses.filter(course => course.field.toLowerCase() === filter.toLowerCase());
+                setFilteredCourses(filtered);
+            } else {
+                setFilteredCourses(allCourses);
+            }
+        };
+        filterCourses();
+    }, [filter, allCourses]);
 
     const [currentPage, setCurrentPage] = useState(1);
     const cardsPerPage = 9;
@@ -39,10 +53,10 @@ const CourseCard = ({ coursesCard }) => {
           pathname: '/course-preview',
           state: { course },
         });
-      };
+    };
 
-    const totalPages = Math.ceil(coursesCard.length / cardsPerPage);
-    // const startIndex = (currentPage - 1) * cardsPerPage;
+    const totalPages = Math.ceil(filteredCourses.length / cardsPerPage);
+    const currentCourses = filteredCourses.slice((currentPage - 1) * cardsPerPage, currentPage * cardsPerPage);
 
     return (
         <div className='p-8 mt-20'>
@@ -54,15 +68,50 @@ const CourseCard = ({ coursesCard }) => {
                 <div className='flex flex-col mb-4 lg:mb-0 lg:w-1/4'>
                     <h3 className='text-xl font-bold mb-2'>Filter By</h3>
                     <div>
-                        <label className='block mb-2'><input type='checkbox' className='mr-2' />Computer Science</label>
-                        <label className='block mb-2'><input type='checkbox' className='mr-2' />Law</label>
-                        <label className='block mb-2'><input type='checkbox' className='mr-2' />Science And Technology</label>
-                        <label className='block mb-2'><input type='checkbox' className='mr-2' />Mathematics</label>
-                        <label className='block mb-2'><input type='checkbox' className='mr-2' />Biology</label>
-                        <label className='block mb-2'><input type='checkbox' className='mr-2' />Business</label>
-                        <label className='block mb-2'><input type='checkbox' className='mr-2' />Electronics</label>
-                        <label className='block mb-2'><input type='checkbox' className='mr-2' />English</label>
-                        <label className='block mb-2'><input type='checkbox' className='mr-2' />French</label>
+                        <label className='block mb-2'>
+                            <input 
+                                type='radio' 
+                                name='course' 
+                                className='mr-2' 
+                                value='all'
+                                checked={filter === 'all'}
+                                onChange={(e) => setFilter(e.target.value)}
+                            />
+                            All
+                        </label>
+                        <label className='block mb-2'>
+                            <input 
+                                type='radio' 
+                                name='course' 
+                                className='mr-2' 
+                                value='computer science'
+                                checked={filter === 'computer science'}
+                                onChange={(e) => setFilter(e.target.value)}
+                            />
+                            Computer Science
+                        </label>
+                        <label className='block mb-2'>
+                            <input 
+                                type='radio' 
+                                name='course' 
+                                className='mr-2' 
+                                value='mathematics'
+                                checked={filter === 'mathematics'}
+                                onChange={(e) => setFilter(e.target.value)}
+                            />
+                            Mathematics
+                        </label>
+                        <label className='block mb-2'>
+                            <input 
+                                type='radio' 
+                                name='course' 
+                                className='mr-2' 
+                                value='english'
+                                checked={filter === 'english'}
+                                onChange={(e) => setFilter(e.target.value)}
+                            />
+                            English
+                        </label>
                     </div>
                     <div className='mt-4'>
                         <h3 className='text-xl font-bold mb-2'>Type Options</h3>
@@ -73,7 +122,7 @@ const CourseCard = ({ coursesCard }) => {
                 <div className='flex-1'>
                     <h3 className='text-xl font-bold mb-4'>Choose The Course That Aligns Best With Your Educational Goals</h3>
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'>
-                        {courses.map((val, index) => (
+                        {currentCourses.map((val, index) => (
                             <div key={val.id} className='bg-white rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:-translate-y-2'>
                                 <div className='bg-green-500 text-blue-800 text-center py-6 rounded-t-lg h-40'>
                                     <h3 className='text-2xl font-bold pt-8'>EUPHEUS</h3>
@@ -122,12 +171,3 @@ const CourseCard = ({ coursesCard }) => {
 };
 
 export default CourseCard;
-
-
-
-
-
-
-
-
-
